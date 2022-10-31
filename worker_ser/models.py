@@ -1,6 +1,6 @@
 from django.db import models
 
-from general.models import Company, Specialization
+from general.models import Company
 from guest_serv.models import Guest
 from datetime import datetime
 
@@ -8,15 +8,13 @@ from datetime import datetime
 class Worker(models.Model):
     name = models.CharField(max_length=80, verbose_name='Employee Name')
     company = models.ForeignKey(Company, related_name='Company', on_delete=models.CASCADE)
-    specialization = models.ForeignKey(Specialization, related_name='Specialization', on_delete=models.CASCADE)
+    #specialization = models.ForeignKey(Specialization, related_name='Specialization', on_delete=models.CASCADE)
     time_start_shift = models.DateTimeField(auto_now_add=True)
     time_end_shift = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        ordering = ['pk']
 
-    def __str__(self):
-        return f'{self.name}:{self.company}:{self.specialization}'
+    #def __str__(self):
+     #   return f'{self.name}:{self.company}:{self.specialization}'
 
 
 class Open_to_guest(models.Model):

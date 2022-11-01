@@ -1,43 +1,33 @@
+from random import choices
+
 from django.db import models
 
-from general.models import Company
+from general.models import Company, Worker, Specialization
 from guest_serv.models import Guest
-from datetime import datetime
+import time
+import datetime
 
 
-class Worker(models.Model):
-    name = models.CharField(max_length=80, verbose_name='Employee Name')
-    company = models.ForeignKey(Company, related_name='Company', on_delete=models.CASCADE)
-    #specialization = models.ForeignKey(Specialization, related_name='Specialization', on_delete=models.CASCADE)
-    time_start_shift = models.DateTimeField(auto_now_add=True)
-    time_end_shift = models.DateTimeField(auto_now_add=True)
-
-
-    #def __str__(self):
-     #   return f'{self.name}:{self.company}:{self.specialization}'
-
-
-class Open_to_guest(models.Model):
+class Process(models.Model):
+    STATUS = (
+        ('1_Waiting', '1_Waiting'),
+        ('2_In service', '2_In service'),
+        ('3_Done', '3_Done'),
+              )
+    worker = models.ForeignKey(Worker, on_delete=models.CASCADE)
+    status = models.CharField(max_length=255, blank=True, null=True, choices=STATUS)
     guest = models.ForeignKey(Guest, on_delete=models.CASCADE)
-    time = models.DateTimeField(auto_now_add=True)
+    start_service = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        ordering = ['pk']
-
-    def __str__(self):
-        return f'{self.guest}-{self.time}'
+    @property
+    def time_in_service(self):
+        return round((time.time() - self.start_service.timestamp()))
 
 
-class Close_current_guest(models.Model):
-    guest = models.ForeignKey(Guest, on_delete=models.CASCADE)
-    time = models.DateTimeField(auto_now_add=True)
+    @property
+    def guest_id(self):
+        return f' {--self.guest} '
 
-    class Meta:
-        ordering = ['pk']
 
-    def __str__(self):
-        return f'{self.guest}-{self.time}'
 
-    @staticmethod
-    def get_time_service(guest: Guest):
-        return f'(time in queue)-{datetime.now()-Guest.time_register}'
+
